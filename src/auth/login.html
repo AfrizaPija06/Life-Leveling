@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Futuristic Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* --- gaya asli kamu (dipersingkat di sini, samakan dengan punyamu) --- */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Orbitron',monospace;min-height:100vh;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#16213e 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    body::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,.1) 1px,transparent 1px);background-size:50px 50px;animation:gridMove 20s linear infinite;z-index:1}
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(50px,50px)}}
+    .particle{position:absolute;width:2px;height:2px;background:#00ffff;border-radius:50%;animation:float 6s ease-in-out infinite;z-index:1}
+    .particle:nth-child(1){top:20%;left:10%;animation-delay:0s}.particle:nth-child(2){top:60%;left:80%;animation-delay:2s}.particle:nth-child(3){top:80%;left:20%;animation-delay:4s}.particle:nth-child(4){top:30%;left:70%;animation-delay:1s}.particle:nth-child(5){top:70%;left:50%;animation-delay:3s}
+    @keyframes float{0%,100%{transform:translateY(0) scale(1);opacity:.7}50%{transform:translateY(-20px) scale(1.2);opacity:1}}
+    .login-container{position:relative;z-index:10;width:100%;max-width:400px;padding:20px}
+    .login-card{background:rgba(15,25,45,.3);backdrop-filter:blur(20px);border:2px solid transparent;border-radius:20px;padding:40px 30px;position:relative;overflow:hidden;box-shadow:0 0 50px rgba(0,255,255,.2),inset 0 0 50px rgba(0,255,255,.05)}
+    .login-card::before{content:'';position:absolute;inset:0;border-radius:20px;padding:2px;background:linear-gradient(45deg,#00ffff,#0080ff,#00ffff);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:borderGlow 3s ease-in-out infinite alternate}
+    @keyframes borderGlow{0%{opacity:.5}100%{opacity:1}}
+    .login-title{font-size:2.5rem;font-weight:900;text-align:center;margin-bottom:40px;color:#00ffff;text-shadow:0 0 10px #00ffff,0 0 20px #00ffff,0 0 30px #00ffff;letter-spacing:3px;animation:titlePulse 2s ease-in-out infinite alternate}
+    @keyframes titlePulse{0%{text-shadow:0 0 10px #00ffff,0 0 20px #00ffff,0 0 30px #00ffff}100%{text-shadow:0 0 15px #00ffff,0 0 25px #00ffff,0 0 35px #00ffff}}
+    .form-group{margin-bottom:25px;position:relative}
+    .form-input{width:100%;padding:15px 20px;background:rgba(0,20,40,.6);border:1px solid rgba(0,255,255,.3);border-radius:10px;color:#fff;font-size:14px;outline:none;transition:.3s;backdrop-filter:blur(10px)}
+    .form-input::placeholder{color:rgba(255,255,255,.5)}
+    .form-input:focus{border-color:#00ffff;box-shadow:0 0 20px rgba(0,255,255,.3),inset 0 0 20px rgba(0,255,255,.1);transform:translateY(-2px)}
+    .login-button{width:100%;padding:15px;background:linear-gradient(45deg,#00ffff,#0080ff);border:none;border-radius:10px;color:#000;font-size:16px;font-weight:700;cursor:pointer;transition:.3s;text-transform:uppercase;letter-spacing:1px;position:relative;overflow:hidden;margin-bottom:20px}
+    .login-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .5s}
+    .login-button:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,255,255,.4),0 0 30px rgba(0,255,255,.6)}
+    .login-button:hover::before{left:100%}
+    .forgot-password{text-align:center;margin-top:15px}
+    .forgot-password a{color:rgba(0,255,255,.8);text-decoration:none;font-size:12px;transition:.3s;position:relative}
+    .forgot-password a:hover{color:#00ffff;text-shadow:0 0 10px #00ffff}
+    .forgot-password a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:#00ffff;transition:width .3s}
+    .forgot-password a:hover::after{width:100%}
+    @media (max-width:480px){.login-container{padding:15px}.login-card{padding:30px 20px}.login-title{font-size:2rem}}
+  </style>
+</head>
+<body>
+  <!-- Floating particles -->
+  <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+
+  <div class="login-container">
+    <div class="login-card">
+      <h1 class="login-title">LOGIN</h1>
+      <form id="loginForm">
+        <div class="form-group">
+          <input id="email" type="email" class="form-input" placeholder="Email Address" required>
+        </div>
+        <div class="form-group">
+          <input id="password" type="password" class="form-input" placeholder="Password" required>
+        </div>
+        <button type="submit" class="login-button">Access System</button>
+      </form>
+      <div class="forgot-password">
+        <a href="./reset.html">Forgot password?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Library Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <!-- Config client kamu -->
+  <script src="../js/supabase.js"></script>
+
+  <!-- Login logic -->
+  <script>
+    // gerak partikel (biar tetap hidup)
+    document.addEventListener('mousemove', (e) => {
+      document.querySelectorAll('.particle').forEach((p, i) => {
+        const s = (i + 1) * 0.01;
+        p.style.transform = `translate(${e.clientX * s}px, ${e.clientY * s}px)`;
+      });
+    });
+
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.querySelector('.login-button');
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      btn.textContent = 'ACCESSING...';
+      btn.style.background = 'linear-gradient(45deg,#ff6b00,#ff8c00)';
+
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        btn.textContent = 'ACCESS DENIED';
+        btn.style.background = 'linear-gradient(45deg,#ff3b3b,#ff8a8a)';
+        setTimeout(() => {
+          btn.textContent = 'Access System';
+          btn.style.background = 'linear-gradient(45deg,#00ffff,#0080ff)';
+        }, 1500);
+        return;
+      }
+
+      btn.textContent = 'ACCESS GRANTED';
+      btn.style.background = 'linear-gradient(45deg,#00ff00,#32cd32)';
+
+      const target = new URL('../pages/dashboard.html', window.location.href).href;
+      setTimeout(() => {
+        try { window.location.assign(target); }
+        catch { window.location.replace(target); }
+      }, 800);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Futuristic Reset Password</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* === (SEMUA CSS KAMU TETAP, dipersingkat di sini agar fokus ke JS) === */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Orbitron',monospace;min-height:100vh;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#16213e 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    .reset-container{position:relative;z-index:10;width:100%;max-width:400px;padding:20px}
+    .reset-card{background:rgba(15,25,45,.28);backdrop-filter:blur(22px);border:2px solid transparent;border-radius:22px;padding:42px 32px;position:relative;overflow:hidden;box-shadow:0 0 55px rgba(0,255,255,.22),inset 0 0 55px rgba(0,255,255,.06)}
+    .reset-title{font-size:2.2rem;font-weight:900;text-align:center;margin-bottom:35px;color:#00ffff}
+    .form-group{margin-bottom:30px}
+    .form-input{width:100%;padding:16px 20px;background:rgba(0,20,40,.65);border:1px solid rgba(0,255,255,.35);border-radius:11px;color:#fff}
+    .reset-button{width:100%;padding:16px;background:linear-gradient(45deg,#00ffff,#0080ff,#00cccc);border:none;border-radius:11px;color:#000;font-weight:700;cursor:pointer}
+    .back-link{text-align:center;margin-top:18px}
+    .back-link a{color:rgba(0,255,255,.75);text-decoration:none;font-size:12px}
+    .status-message{text-align:center;margin-top:15px;padding:10px;border-radius:8px;font-size:12px;opacity:0;transition:.3s}
+    .status-message.show{opacity:1}
+    .status-message.success{background:rgba(0,255,0,.1);color:#00ff00;border:1px solid rgba(0,255,0,.3)}
+    .status-message.error{background:rgba(255,0,0,.1);color:#ff6b6b;border:1px solid rgba(255,0,0,.3)}
+  </style>
+</head>
+<body>
+  <div class="reset-container">
+    <div class="reset-card">
+      <h1 class="reset-title">RESET PASSWORD</h1>
+      <form id="resetForm">
+        <div class="form-group">
+          <input id="email" type="email" class="form-input" placeholder="Enter your email" required />
+        </div>
+        <button type="submit" class="reset-button">Send Reset Link</button>
+      </form>
+      <div class="back-link">
+        <a href="./login.html">Back to Login</a>
+      </div>
+      <div id="statusMessage" class="status-message"></div>
+    </div>
+  </div>
+
+  <!-- JS: urutannya penting -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+    const form = document.getElementById('resetForm');
+    const btn  = document.querySelector('.reset-button');
+    const msg  = document.getElementById('statusMessage');
+    const emailEl = document.getElementById('email');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = emailEl.value.trim();
+      if (!email) return;
+
+      // UI: loading
+      btn.disabled = true;
+      btn.textContent = 'SCANNING DATABASE...';
+      msg.className = 'status-message';
+      msg.textContent = '';
+      
+      // URL tujuan setelah klik link email
+      const redirectTo = `${window.location.origin}/src/auth/update-password.html`;
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+
+      if (error) {
+        // tampilkan error
+        msg.textContent = '❌ ' + error.message;
+        msg.classList.add('show','error');
+        btn.disabled = false;
+        btn.textContent = 'Send Reset Link';
+        return;
+      }
+
+      // sukses
+      btn.textContent = 'RESET LINK SENT';
+      msg.textContent = '✅ Link reset dikirim. Silakan cek email kamu.';
+      msg.classList.add('show','success');
+
+      // optional: re-enable tombol setelah beberapa detik
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = 'Send Reset Link';
+      }, 3000);
+    });
+  </script>
+</body>
+</html>

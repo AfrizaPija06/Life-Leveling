@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Life Leveling - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --neon-blue:#00d4ff; --neon-teal:#00ffcc; --dark-bg:#0a0a0f; --panel-bg:rgba(15,23,42,.8); }
+    body {
+      background:var(--dark-bg);
+      background-image:
+        linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
+      background-size:50px 50px;
+      font-family:'Inter',sans-serif;
+    }
+    .hologram-panel{background:var(--panel-bg);border:1px solid rgba(0,212,255,.3);border-radius:12px;box-shadow:0 0 20px rgba(0,212,255,.1),inset 0 1px 0 rgba(255,255,255,.1);backdrop-filter:blur(10px);position:relative;overflow:hidden;}
+    .hologram-panel::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,212,255,.1),transparent);animation:shine 3s infinite;}
+    @keyframes shine{0%{left:-100%}100%{left:100%}}
+    .neon-text{color:var(--neon-blue);text-shadow:0 0 10px rgba(0,212,255,.5);}
+    .orbitron{font-family:'Orbitron',monospace;}
+    .progress-bar{background:linear-gradient(90deg,var(--neon-blue),var(--neon-teal));box-shadow:0 0 10px rgba(0,212,255,.5);}
+    .progress-bar.saved{animation:pulseGlow .8s ease-out 1;}
+    @keyframes pulseGlow{0%{box-shadow:0 0 0 0 rgba(0,212,255,.45)}100%{box-shadow:0 0 0 14px rgba(0,212,255,0)}}
+    .quest-item{transition:.3s;}
+    .quest-item:hover{background:rgba(0,212,255,.05);border-color:rgba(0,212,255,.5);}
+    .skill-bar{background:rgba(0,212,255,.1);border-radius:10px;overflow:hidden;}
+    .skill-progress{background:linear-gradient(90deg,var(--neon-blue),var(--neon-teal));height:100%;border-radius:10px;box-shadow:0 0 10px rgba(0,212,255,.3);transition:width .5s ease;}
+    .day-cell{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:.2s;}
+    .day-cell:hover{transform:scale(1.1);box-shadow:0 0 8px rgba(0,212,255,.5);}
+    .day-complete{background:rgba(34,197,94,.3);border:1px solid #22c55e}
+    .day-partial{background:rgba(234,179,8,.3);border:1px solid #eab308}
+    .day-missed{background:rgba(239,68,68,.3);border:1px solid #ef4444}
+    .add-skill-btn{background:linear-gradient(45deg,var(--neon-blue),var(--neon-teal));transition:.3s;}
+    .add-skill-btn:hover{box-shadow:0 0 20px rgba(0,212,255,.5);transform:translateY(-2px);}
+    /* Toast */
+    #toast-wrap{pointer-events:none}
+    .toast{background:rgba(15,23,42,.92);border:1px solid rgba(0,212,255,.35);box-shadow:0 8px 24px rgba(0,0,0,.35),0 0 16px rgba(0,212,255,.15);color:#e2e8f0;border-radius:10px;padding:10px 12px;font-size:14px;display:flex;align-items:center;gap:8px;transition:.3s;}
+    .toast-success{border-color:#22c55e}
+    .toast-warn{border-color:#eab308}
+    .toast-info{border-color:#60a5fa}
+  </style>
+</head>
+<body class="min-h-screen text-white p-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="orbitron text-4xl md:text-6xl font-bold neon-text mb-2">LIFE LEVELING</h1>
+      <p class="text-gray-400 text-lg">Dashboard Beta</p>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- STATUS -->
+      <div class="hologram-panel p-6">
+        <h2 class="orbitron text-xl font-bold neon-text mb-6">STATUS</h2>
+        <div class="flex items-center mb-6">
+          <div class="w-16 h-16 rounded-full border border-cyan-400 flex items-center justify-center text-2xl font-bold mr-4">AF</div>
+          <div>
+            <div class="orbitron text-lg font-bold">Afriza</div>
+            <div class="text-sm text-gray-400">Rank: Warrior</div>
+            <div class="text-xs text-yellow-400">Season 1</div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <div class="flex justify-between text-sm mb-2">
+            <span>Level 5</span><span id="xp-label">0 XP</span>
+          </div>
+          <div class="w-full bg-gray-700 rounded-full h-3">
+            <div class="progress-bar h-3 rounded-full" id="xp-bar" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="flex justify-between">
+          <div class="text-center">
+            <div class="text-2xl">🔥</div>
+            <div class="text-sm text-gray-400">Streak</div>
+            <div class="orbitron font-bold" id="streak-count">0</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl">⚔️</div>
+            <div class="text-sm text-gray-400">Rank</div>
+            <div class="orbitron font-bold text-yellow-400">Warrior</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DAILY QUEST -->
+      <div class="hologram-panel p-6">
+        <h2 class="orbitron text-xl font-bold neon-text mb-4">DAILY QUEST</h2>
+        <!-- Controls -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-sm text-gray-400"><span id="quest-date"></span></div>
+          <div class="flex gap-2">
+            <button class="px-3 py-1.5 rounded add-skill-btn text-black font-medium" onclick="saveToday()">Save</button>
+            <button class="px-3 py-1.5 rounded bg-gray-800 border border-gray-600 hover:bg-gray-700" onclick="resetToday()">Reset</button>
+            <button class="px-3 py-1.5 rounded bg-gray-800 border border-gray-600 hover:bg-gray-700" onclick="resetAll()">Reset 30d</button>
+          </div>
+        </div>
+        <div class="space-y-3 mb-6" id="quest-list"><!-- auto render --></div>
+        <div class="border-t border-gray-600 pt-4">
+          <div class="flex justify-between text-sm mb-2"><span>Progress</span><span id="quest-progress">0%</span></div>
+          <div class="w-full bg-gray-700 rounded-full h-2 mb-2">
+            <div class="progress-bar h-2 rounded-full" id="quest-bar" style="width:0%"></div>
+          </div>
+          <div class="text-xs text-yellow-400">⚠️ Failure to complete resets streak</div>
+          <div class="text-sm text-gray-400">XP Today: <span id="xp-today">0</span></div>
+        </div>
+      </div>
+
+      <!-- SKILLS -->
+      <div class="hologram-panel p-6">
+        <h2 class="orbitron text-xl font-bold neon-text mb-6">SKILLS</h2>
+        <div class="space-y-4 mb-6" id="skills-container"></div>
+        <button class="add-skill-btn w-full py-3 rounded-lg font-medium orbitron" onclick="addSkill()">+ ADD SKILL</button>
+      </div>
+
+      <!-- 30-DAY RECAP -->
+      <div class="hologram-panel p-6">
+        <h2 class="orbitron text-xl font-bold neon-text mb-6">30-DAY RECAP</h2>
+        <div class="grid grid-cols-7 gap-1 text-xs text-gray-400 mb-2">
+          <div class="text-center">S</div><div class="text-center">D</div><div class="text-center">A</div>
+          <div class="text-center">M</div><div class="text-center">I</div><div class="text-center">Q</div>
+          <div class="text-center">Day</div>
+        </div>
+        <div id="recap-grid" class="space-y-1 mb-4"></div>
+        <div class="border-t border-gray-600 pt-4 text-sm grid grid-cols-2 gap-4">
+          <div><div class="text-gray-400">Mosque Prayers</div><div class="orbitron font-bold text-green-400" id="mosque-total">0</div></div>
+          <div><div class="text-gray-400">Qur'an Lines</div><div class="orbitron font-bold text-blue-400" id="quran-total">0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast-wrap" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+<script>
+/* ========= Helpers & State ========= */
+const TODAY = new Date().toISOString().slice(0,10);
+const LS_KEYS = { QUEST:(d=TODAY)=>`ll:quest:${d}`, SKILLS:'ll:skills' };
+const XP_RULES = { prayer:{missed:0, home:20, mosque:30}, quranPerLine:10 };
+function saveLS(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function loadLS(k,f=null){ try{ return JSON.parse(localStorage.getItem(k)) ?? f } catch { return f } }
+function showToast(msg, type='info', timeout=1600){
+  const wrap=document.getElementById('toast-wrap');
+  const div=document.createElement('div');
+  div.className=`toast ${type==='success'?'toast-success':type==='warn'?'toast-warn':'toast-info'}`;
+  div.innerHTML = `<span>${type==='success'?'✅':type==='warn'?'⚠️':'ℹ️'}</span><span>${msg}</span>`;
+  wrap.appendChild(div);
+  setTimeout(()=>{ div.style.opacity='0'; div.style.transform='translateY(-6px)'; }, timeout);
+  setTimeout(()=>{ div.remove(); }, timeout+350);
+}
+function setDateLabel(){
+  const d=new Date();
+  const iso=d.toISOString().slice(0,10);
+  const label=d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});
+  document.getElementById('quest-date').textContent = `${label} (${iso})`;
+}
+
+/* ========= Quest ========= */
+const prayers=['subuh','dzuhur','ashar','maghrib','isya'];
+let questData = loadLS(LS_KEYS.QUEST(), {subuh:'missed',dzuhur:'missed',ashar:'missed',maghrib:'missed',isya:'missed',quran:0});
+
+function renderQuestList(){
+  const wrap=document.getElementById('quest-list'); wrap.innerHTML='';
+  prayers.forEach(p=>{
+    const row=document.createElement('div'); row.className='quest-item border border-gray-600 rounded-lg p-3 flex items-center justify-between';
+    row.innerHTML = `
+      <div class="flex items-center"><span class="mr-3">🕌</span><span>${p[0].toUpperCase()+p.slice(1)}</span></div>
+      <select class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm"
+              onchange="updateQuest(this,'${p}')">
+        <option value="missed">❌</option>
+        <option value="home">🏠</option>
+        <option value="mosque">🕌</option>
+      </select>`;
+    wrap.appendChild(row);
+    row.querySelector('select').value = questData[p];
+  });
+  const qRow=document.createElement('div'); qRow.className='quest-item border border-gray-600 rounded-lg p-3 flex items-center justify-between';
+  qRow.innerHTML = `
+    <div class="flex items-center"><span class="mr-3">📖</span><span>Qur'an Lines</span></div>
+    <input type="number" min="0" max="200" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm w-20"
+           onchange="updateQuran(this)" value="${questData.quran}">
+  `;
+  wrap.appendChild(qRow);
+}
+
+function updateQuest(sel, prayer){
+  questData[prayer] = sel.value;
+  saveLS(LS_KEYS.QUEST(), questData);
+  updateQuestProgress();
+  renderRecap30();
+}
+
+function updateQuran(inp){
+  questData.quran = Math.max(0, parseInt(inp.value)||0);
+  saveLS(LS_KEYS.QUEST(), questData);
+  updateQuestProgress();
+  renderRecap30();
+}
+
+function calcQuestXP(q){
+  const prayXP = prayers.reduce((s,k)=> s + (XP_RULES.prayer[q[k]] ?? 0), 0);
+  const quranXP = (q.quran || 0) * XP_RULES.quranPerLine;
+  return prayXP + quranXP;
+}
+
+function updateQuestProgress(){
+  const filled = prayers.filter(k=>questData[k]!=='missed').length + (questData.quran>0?1:0);
+  const perc = Math.round(filled / 6 * 100);
+  document.getElementById('quest-progress').textContent = perc + '%';
+  document.getElementById('quest-bar').style.width = perc + '%';
+  const xp = calcQuestXP(questData);
+  document.getElementById('xp-today').textContent = xp;
+  document.getElementById('xp-label').textContent = xp + ' XP';
+}
+
+function saveToday(){
+  saveLS(LS_KEYS.QUEST(), questData);
+  updateQuestProgress();
+  renderRecap30();
+  const bar = document.getElementById('quest-bar'); bar.classList.add('saved');
+  setTimeout(()=>bar.classList.remove('saved'), 850);
+  showToast('Daily quest saved!', 'success');
+}
+
+function resetToday(){
+  localStorage.removeItem(LS_KEYS.QUEST());
+  questData = {subuh:'missed',dzuhur:'missed',ashar:'missed',maghrib:'missed',isya:'missed',quran:0};
+  renderQuestList();
+  updateQuestProgress();
+  renderRecap30();
+  showToast('Today reset.', 'warn');
+}
+
+function resetAll(){
+  for(let i=0;i<30;i++){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const iso=d.toISOString().slice(0,10);
+    localStorage.removeItem(LS_KEYS.QUEST(iso));
+  }
+  resetToday();
+  showToast('30-day recap cleared.', 'warn');
+}
+
+/* ========= Skills ========= */
+let skills = loadLS(LS_KEYS.SKILLS, [
+  {id:crypto.randomUUID(), name:'Public Speaking', icon:'🎤', level:1, xp:0, xpCap:500}
+]);
+
+function renderSkillList(){
+  const wrap=document.getElementById('skills-container'); wrap.innerHTML='';
+  skills.forEach(s=>{
+    const pct=Math.min(100, Math.round(s.xp/s.xpCap*100));
+    const div=document.createElement('div'); div.className='skill-item';
+    div.innerHTML = `
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2"><span>${s.icon}</span><span class="font-medium">${s.name}</span></div>
+        <div class="text-sm text-gray-400">Lv. ${s.level}</div>
+      </div>
+      <div class="skill-bar h-3 mb-1"><div class="skill-progress" style="width:${pct}%"></div></div>
+      <div class="text-xs text-gray-400 flex justify-between">
+        <span>${s.xp}/${s.xpCap} XP</span>
+        <div class="flex gap-1">
+          <button class="px-2 py-0.5 text-xs bg-white/10 hover:bg-white/20 rounded" onclick="addSkillXP('${s.id}',50)">+50</button>
+          <button class="px-2 py-0.5 text-xs bg-white/10 hover:bg-white/20 rounded" onclick="addSkillXP('${s.id}',100)">+100</button>
+        </div>
+      </div>`;
+    wrap.appendChild(div);
+  });
+}
+
+function addSkill(){
+  const name=prompt('Skill name (e.g., Public Speaking)'); if(!name) return;
+  const icon=prompt('Skill emoji (e.g., 🎯)') || '⭐';
+  skills.push({id:crypto.randomUUID(), name, icon, level:1, xp:0, xpCap:500});
+  saveLS(LS_KEYS.SKILLS, skills);
+  renderSkillList();
+  showToast('Skill added', 'success');
+}
+
+function addSkillXP(id, amount){
+  const s=skills.find(x=>x.id===id); if(!s) return;
+  s.xp += amount;
+  while(s.xp >= s.xpCap){ s.xp -= s.xpCap; s.level++; s.xpCap=Math.round(s.xpCap*1.5); }
+  saveLS(LS_KEYS.SKILLS, skills);
+  renderSkillList();
+  showToast(`${s.name} +${amount} XP`, 'info');
+}
+
+/* ========= 30-Day Recap ========= */
+function getISO(daysAgo){ const d=new Date(); d.setDate(d.getDate()-daysAgo); return d.toISOString().slice(0,10); }
+function recapRowData(dateISO){ return loadLS(LS_KEYS.QUEST(dateISO), null); }
+function recapCellClass(v,isQ){ if(isQ){ if(!v||v<=0) return 'day-missed'; if(v<10) return 'day-partial'; return 'day-complete'; }
+  else { if(!v||v==='missed') return 'day-missed'; if(v==='home') return 'day-partial'; return 'day-complete'; } }
+function recapCellText(v,isQ){ if(isQ) return String(v||0); if(!v||v==='missed') return '❌'; if(v==='home') return '🏠'; return '🕌'; }
+
+function renderRecap30(){
+  const wrap=document.getElementById('recap-grid'); wrap.innerHTML='';
+  let mosqueTotal=0, qTotal=0;
+
+  // 30 hari terakhir: kiri paling lama, kanan terbaru
+  for(let idx=0; idx<30; idx++){
+    const daysAgo = 29 - idx; // idx 0 = 29 hari lalu, idx 29 = hari ini
+    const dateISO = getISO(daysAgo);
+    const q = recapRowData(dateISO);
+
+    const row=document.createElement('div'); row.className='grid grid-cols-7 gap-1';
+
+    const keys=['subuh','dzuhur','ashar','maghrib','isya','quran'];
+    keys.forEach(k=>{
+      const cell=document.createElement('div'); cell.className='day-cell';
+      if(k==='quran'){
+        const val=q?.quran??0; qTotal += val;
+        cell.classList.add(recapCellClass(val,true));
+        cell.textContent = recapCellText(val,true);
+      } else {
+        const val=q?.[k]??'missed';
+        if(val==='mosque') mosqueTotal++;
+        cell.classList.add(recapCellClass(val,false));
+        cell.textContent = recapCellText(val,false);
+      }
+      cell.title = `${dateISO} - ${k}`;
+      row.appendChild(cell);
+    });
+
+    const dayNum=document.createElement('div'); dayNum.className='day-cell text-gray-400'; dayNum.textContent=idx+1;
+    row.appendChild(dayNum);
+
+    wrap.appendChild(row);
+  }
+
+  document.getElementById('mosque-total').textContent = mosqueTotal;
+  document.getElementById('quran-total').textContent = qTotal;
+}
+
+/* ========= Init ========= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  setDateLabel();
+  renderQuestList();
+  updateQuestProgress();
+  renderSkillList();
+  renderRecap30();
+});
+</script>
+</body>
+</html>

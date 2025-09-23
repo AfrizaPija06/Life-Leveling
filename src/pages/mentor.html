@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Life Leveling - Season 1 | Mentor Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{font-family:'Inter',sans-serif;background:#fafafa}
+    .glow-text{ text-shadow:0 0 20px rgba(34,197,94,.3), 0 0 40px rgba(34,197,94,.2)}
+    .glow-card{ box-shadow:0 4px 15px rgba(0,0,0,.08), 0 0 20px rgba(34,197,94,.05)}
+    .glow-gold{ box-shadow:0 0 15px rgba(245,158,11,.3)}
+    .gradient-bg{ background:linear-gradient(135deg,#10b981 0%,#3b82f6 50%,#f59e0b 100%)}
+    .gradient-text{ background:linear-gradient(135deg,#10b981 0%,#3b82f6 50%,#f59e0b 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .orbitron{ font-family:'Orbitron',monospace}
+    .check-in-day{ transition:all .2s ease}
+    .check-in-day:hover{ transform:scale(1.1)}
+    .alert-row{ background:linear-gradient(90deg,rgba(239,68,68,.1) 0%,rgba(239,68,68,.05) 100%);border-left:4px solid #ef4444}
+    .top-performer{ background:linear-gradient(135deg,rgba(245,158,11,.1) 0%,rgba(34,197,94,.1) 100%)}
+    .nav-active{ background:linear-gradient(135deg,#10b981 0%,#3b82f6 100%);color:#fff}
+    .badge-bar{ transition:width .8s ease-in-out}
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+
+  <!-- Header -->
+  <header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+          <div>
+            <h1 class="text-lg font-bold text-gray-900">Mentor Ahmad</h1>
+            <p class="text-sm text-gray-600">Mentoring Group Alpha</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="orbitron text-sm font-bold gradient-text">Season 1</div>
+          <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors" aria-label="Actions">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 19h6v-2H4v2zM4 15h8v-2H4v2zM4 11h10V9H4v2z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex space-x-2 overflow-x-auto">
+        <button onclick="switchTab(event,'dashboard')"   class="nav-tab nav-active px-4 py-3 text-sm font-semibold rounded-t-lg transition-all">Dashboard</button>
+        <button onclick="switchTab(event,'members')"     class="nav-tab px-4 py-3 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all">Members</button>
+        <button onclick="switchTab(event,'leaderboard')" class="nav-tab px-4 py-3 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all">Leaderboard</button>
+        <button onclick="switchTab(event,'badges')"      class="nav-tab px-4 py-3 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all">Badges</button>
+        <button onclick="switchTab(event,'settings')"    class="nav-tab px-4 py-3 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-all">Settings</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Dashboard Tab -->
+    <section id="dashboard-content" class="tab-content">
+      <!-- Overview -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-2xl p-6 glow-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Total Members</p>
+              <p id="card-total-members" class="text-3xl font-bold text-gray-900">0</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 glow-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Avg XP This Week</p>
+              <p id="card-avg-xp" class="text-3xl font-bold gradient-text">0</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 glow-card">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Avg Streak</p>
+              <p id="card-avg-streak" class="text-3xl font-bold text-orange-600">0 days</p>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 glow-card top-performer">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-gray-600">Top Performer</p>
+              <p id="card-top-name" class="text-lg font-bold text-gray-900">—</p>
+              <p id="card-top-xp" class="text-sm text-green-600 font-semibold">0 XP</p>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center glow-gold">
+              <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left: table + heatmap -->
+        <div class="lg:col-span-2 space-y-8">
+          <!-- Member Progress Table -->
+          <div class="bg-white rounded-2xl p-6 glow-card">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Member Progress</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="border-b border-gray-200">
+                    <th class="text-left py-3 px-2 text-sm font-semibold text-gray-600">Member</th>
+                    <th class="text-left py-3 px-2 text-sm font-semibold text-gray-600">Rank</th>
+                    <th class="text-left py-3 px-2 text-sm font-semibold text-gray-600">XP</th>
+                    <th class="text-left py-3 px-2 text-sm font-semibold text-gray-600">Streak</th>
+                    <th class="text-left py-3 px-2 text-sm font-semibold text-gray-600">Last Check-in</th>
+                  </tr>
+                </thead>
+                <tbody id="member-rows" class="divide-y divide-gray-100">
+                  <!-- rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Attendance Heatmap (demo) -->
+          <div class="bg-white rounded-2xl p-6 glow-card">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-gray-900">Check-in Heatmap</h3>
+              <select class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                <option>All Members</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-7 gap-2 mb-2">
+              <div class="text-xs text-gray-500 text-center">Mon</div>
+              <div class="text-xs text-gray-500 text-center">Tue</div>
+              <div class="text-xs text-gray-500 text-center">Wed</div>
+              <div class="text-xs text-gray-500 text-center">Thu</div>
+              <div class="text-xs text-gray-500 text-center">Fri</div>
+              <div class="text-xs text-gray-500 text-center">Sat</div>
+              <div class="text-xs text-gray-500 text-center">Sun</div>
+            </div>
+            <div class="grid grid-cols-7 gap-2">
+              <div class="w-8 h-8 bg-green-500 rounded-lg check-in-day" title="8/10 checked in"></div>
+              <div class="w-8 h-8 bg-green-400 rounded-lg check-in-day" title="7/10 checked in"></div>
+              <div class="w-8 h-8 bg-green-500 rounded-lg check-in-day" title="9/10 checked in"></div>
+              <div class="w-8 h-8 bg-yellow-400 rounded-lg check-in-day" title="5/10 checked in"></div>
+              <div class="w-8 h-8 bg-green-500 rounded-lg check-in-day" title="8/10 checked in"></div>
+              <div class="w-8 h-8 bg-red-400 rounded-lg check-in-day" title="3/10 checked in"></div>
+              <div class="w-8 h-8 bg-green-300 rounded-lg check-in-day" title="6/10 checked in"></div>
+            </div>
+            <div class="flex items-center justify-between mt-4 text-xs text-gray-500">
+              <span>Less</span>
+              <div class="flex space-x-1">
+                <div class="w-3 h-3 bg-gray-200 rounded"></div>
+                <div class="w-3 h-3 bg-green-200 rounded"></div>
+                <div class="w-3 h-3 bg-green-400 rounded"></div>
+                <div class="w-3 h-3 bg-green-500 rounded"></div>
+              </div>
+              <span>More</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: leaderboard + badges + alerts -->
+        <div class="space-y-8">
+          <!-- Weekly Leaderboard -->
+          <div class="bg-white rounded-2xl p-6 glow-card">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Weekly Leaderboard</h3>
+            <div id="weekly-leaderboard" class="space-y-3">
+              <!-- rendered by JS -->
+            </div>
+            <button class="w-full mt-4 py-2 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">View Full Leaderboard</button>
+          </div>
+
+          <!-- Badge Distribution (placeholder demo) -->
+          <div class="bg-white rounded-2xl p-6 glow-card">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Badge Distribution</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Subuh Warrior</span>
+                  <span id="bdg-subuh-txt" class="text-sm text-gray-600">0/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div id="bdg-subuh" class="bg-green-500 h-2 rounded-full badge-bar" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Quran Hero</span>
+                  <span id="bdg-quran-txt" class="text-sm text-gray-600">0/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div id="bdg-quran" class="bg-blue-500 h-2 rounded-full badge-bar" style="width: 0%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Perfect Muslim</span>
+                  <span id="bdg-perfect-txt" class="text-sm text-gray-600">0/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div id="bdg-perfect" class="bg-yellow-500 h-2 rounded-full badge-bar" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications Panel (demo) -->
+          <div class="bg-white rounded-2xl p-6 glow-card">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Recent Alerts</h3>
+            <div class="space-y-3">
+              <div class="p-3 bg-red-50 border border-red-200 rounded-xl">
+                <p class="text-sm text-red-800 font-medium">Omar K. has broken his streak</p>
+                <button class="text-xs text-red-600 hover:text-red-700 mt-1 font-semibold">Send encouragement →</button>
+              </div>
+              <div class="p-3 bg-green-50 border border-green-200 rounded-xl">
+                <p class="text-sm text-green-800 font-medium">Fatima reached Elite rank! 🎉</p>
+                <button class="text-xs text-green-600 hover:text-green-700 mt-1 font-semibold">Congratulate →</button>
+              </div>
+              <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
+                <p class="text-sm text-yellow-800 font-medium">3 members need check-in reminder</p>
+                <button class="text-xs text-yellow-600 hover:text-yellow-700 mt-1 font-semibold">Send reminder →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other Tabs -->
+    <section id="members-content" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 glow-card">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Members Management</h2>
+        <p class="text-gray-600">Detailed member profiles and management tools would go here.</p>
+      </div>
+    </section>
+
+    <section id="leaderboard-content" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 glow-card">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Full Leaderboard</h2>
+        <p class="text-gray-600">Complete leaderboard with all members and detailed rankings would go here.</p>
+      </div>
+    </section>
+
+    <section id="badges-content" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 glow-card">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Badge Management</h2>
+        <p class="text-gray-600">Badge creation, assignment, and tracking tools would go here.</p>
+      </div>
+    </section>
+
+    <section id="settings-content" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-6 glow-card">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Settings</h2>
+        <p class="text-gray-600">Dashboard preferences and group settings would go here.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dummy data (same shape as yang kita pakai di opsi 1) -->
+  <script>
+    window.DUMMY = {
+      users: [
+        { id:"u-01", name:"Afriza",     rank:"Warrior",       xp:2450, level:12, streak:7,  last:"Today" },
+        { id:"u-02", name:"Ali M.",     rank:"Elite",         xp:2890, level:14, streak:3,  last:"Yesterday" },
+        { id:"u-03", name:"Sarah L.",   rank:"Master",        xp:2400, level:13, streak:6,  last:"Today" },
+        { id:"u-04", name:"Omar K.",    rank:"Beginner",      xp:1200, level:8,  streak:0,  last:"3 days ago", broken:true },
+        { id:"u-05", name:"Fatima A.",  rank:"Elite",         xp:3200, level:15, streak:18, last:"Today" },
+        { id:"u-06", name:"Dina",       rank:"Warrior",       xp:1950, level:10, streak:1,  last:"Today" },
+        { id:"u-07", name:"Rafi",       rank:"Master",        xp:3100, level:15, streak:5,  last:"Yesterday" },
+        { id:"u-08", name:"Hakim",      rank:"Grand Master",  xp:1000, level:8,  streak:1,  last:"Yesterday" },
+        { id:"u-09", name:"Nadia",      rank:"Elite",         xp:2750, level:13, streak:4,  last:"Today" },
+        { id:"u-10",name:"Fajar",       rank:"Warrior",       xp: 750, level:7,  streak:0,  last:"4 days ago" }
+      ]
+    };
+  </script>
+
+  <!-- Renderers -->
+  <script>
+    // Tab switching (fix: pass event explicitly)
+    function switchTab(e, tabName){
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden'));
+      document.getElementById(tabName+'-content').classList.remove('hidden');
+
+      document.querySelectorAll('.nav-tab').forEach(t=>{
+        t.classList.remove('nav-active'); t.classList.add('text-gray-600','hover:text-gray-900');
+      });
+      e.target.classList.add('nav-active'); e.target.classList.remove('text-gray-600','hover:text-gray-900');
+    }
+
+    function avatarSeed(name){
+      return (name||'?').trim().charAt(0).toUpperCase();
+    }
+
+    function rankPill(rank){
+      const map = {
+        "Warrior":"bg-yellow-100 text-yellow-800",
+        "Elite":"bg-blue-100 text-blue-800",
+        "Master":"bg-purple-100 text-purple-800",
+        "Grand Master":"bg-teal-100 text-teal-800",
+        "Beginner":"bg-gray-100 text-gray-800"
+      };
+      const cls = map[rank] || "bg-gray-100 text-gray-800";
+      return `<span class="px-2 py-1 ${cls} text-xs font-semibold rounded-full">${rank}</span>`;
+    }
+
+    function renderOverview(users){
+      const total = users.length;
+      const avgXP = Math.round(users.reduce((a,u)=>a+u.xp,0)/total);
+      const avgStreak = Math.round(users.reduce((a,u)=>a+u.streak,0)/total);
+      const top = [...users].sort((a,b)=>b.xp-a.xp)[0] || {name:'—', xp:0};
+
+      document.getElementById('card-total-members').textContent = total;
+      document.getElementById('card-avg-xp').textContent = avgXP.toLocaleString();
+      document.getElementById('card-avg-streak').textContent = `${avgStreak} days`;
+      document.getElementById('card-top-name').textContent = top.name;
+      document.getElementById('card-top-xp').textContent = `${top.xp.toLocaleString()} XP`;
+    }
+
+    function renderMemberTable(users){
+      const tbody = document.getElementById('member-rows');
+      tbody.innerHTML = "";
+      users
+        .sort((a,b)=>b.xp-a.xp)
+        .forEach(u=>{
+          const row = document.createElement('tr');
+          if(u.broken) row.className = "alert-row hover:bg-red-50 transition-colors";
+          else row.className = "hover:bg-gray-50 transition-colors";
+
+          row.innerHTML = `
+            <td class="py-3 px-2">
+              <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 ${u.broken?'bg-red-500':'bg-blue-500'} rounded-full flex items-center justify-center text-white text-sm font-bold">${avatarSeed(u.name)}</div>
+                <span class="font-medium text-gray-900">${u.name}</span>
+              </div>
+            </td>
+            <td class="py-3 px-2">${rankPill(u.rank)}</td>
+            <td class="py-3 px-2 font-semibold text-green-600">${u.xp.toLocaleString()}</td>
+            <td class="py-3 px-2">
+              ${u.broken
+                ? `<span class="text-red-600 font-semibold">Broken</span>`
+                : `<span class="flex items-center text-orange-600">
+                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                    </svg>${u.streak} days</span>`
+              }
+            </td>
+            <td class="py-3 px-2 text-sm ${u.broken?'text-red-600 font-semibold':'text-gray-600'}">${u.last}</td>
+          `;
+          tbody.appendChild(row);
+        });
+    }
+
+    function renderWeeklyLeaderboard(users){
+      const top3 = [...users].sort((a,b)=>b.xp-a.xp).slice(0,3);
+      const wrap = document.getElementById('weekly-leaderboard');
+      wrap.innerHTML = "";
+      top3.forEach((u,i)=>{
+        const bg = i===0 ? "bg-yellow-50" : i===1 ? "bg-gray-50" : "bg-orange-50";
+        const medal = i===0 ? "👑" : i===1 ? "🥈" : "🥉";
+        const rankTxt = `#${i+1}`;
+        const item = document.createElement('div');
+        item.className = `flex items-center space-x-3 p-3 rounded-xl ${bg}`;
+        item.innerHTML = `
+          <div class="text-2xl">${medal}</div>
+          <div class="flex-1">
+            <p class="font-semibold text-gray-900">${u.name}</p>
+            <p class="text-sm text-gray-600">${u.xp.toLocaleString()} XP</p>
+          </div>
+          <div class="${i===0?'text-yellow-600':i===1?'text-gray-600':'text-orange-600'} font-bold">${rankTxt}</div>
+        `;
+        wrap.appendChild(item);
+      });
+    }
+
+    function renderBadgeDistribution(users){
+      // Demo kalkulasi kasar berbasis XP & streak:
+      const total = users.length;
+      const subuhWarrior = Math.min(total, users.filter(u=>u.streak>=7).length);
+      const quranHero = Math.min(total, Math.round(total*0.6)); // placeholder
+      const perfectMuslim = Math.min(total, Math.round(total*0.2)); // placeholder
+
+      const setBar = (idBar, idTxt, count) => {
+        const pct = Math.round((count/total)*100);
+        document.getElementById(idBar).style.width = pct + "%";
+        document.getElementById(idTxt).textContent = `${count}/${total}`;
+      };
+
+      setBar("bdg-subuh","bdg-subuh-txt", subuhWarrior);
+      setBar("bdg-quran","bdg-quran-txt", quranHero);
+      setBar("bdg-perfect","bdg-perfect-txt", perfectMuslim);
+    }
+
+    // Animate badge bars on load
+    window.addEventListener('load', ()=>{
+      const users = window.DUMMY.users;
+      renderOverview(users);
+      renderMemberTable(users);
+      renderWeeklyLeaderboard(users);
+      renderBadgeDistribution(users);
+
+      // Animate bars after paint
+      setTimeout(()=>{
+        document.querySelectorAll('.badge-bar').forEach(bar=>{
+          const w = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(()=>{ bar.style.width = w; }, 80);
+        });
+      }, 300);
+
+      // demo notification buttons
+      document.querySelectorAll('button').forEach(btn=>{
+        if(btn.textContent.includes('encouragement')) btn.addEventListener('click',()=>alert('Encouragement message sent!'));
+        if(btn.textContent.includes('Congratulate')) btn.addEventListener('click',()=>alert('Congratulations message sent!'));
+        if(btn.textContent.includes('reminder')) btn.addEventListener('click',()=>alert('Check-in reminder sent!'));
+      });
+    });
+  </script>
+</body>
+</html>

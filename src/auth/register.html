@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Futuristic Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    /* === gaya kamu (dipertahankan) === */
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Orbitron',monospace;min-height:100vh;background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#16213e 100%);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    body::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,255,.15) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,.15) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 25s linear infinite;z-index:1}
+    @keyframes gridMove{0%{transform:translate(0,0)}100%{transform:translate(60px,60px)}}
+    .particle{position:absolute;width:3px;height:3px;background:#00ffff;border-radius:50%;animation:float 8s ease-in-out infinite;z-index:1;box-shadow:0 0 10px #00ffff}
+    .particle:nth-child(1){top:15%;left:15%;animation-delay:0s}.particle:nth-child(2){top:70%;left:85%;animation-delay:2.5s}.particle:nth-child(3){top:85%;left:25%;animation-delay:5s}.particle:nth-child(4){top:25%;left:75%;animation-delay:1.5s}.particle:nth-child(5){top:60%;left:45%;animation-delay:3.5s}.particle:nth-child(6){top:40%;left:10%;animation-delay:4s}.particle:nth-child(7){top:90%;left:60%;animation-delay:6s}
+    @keyframes float{0%,100%{transform:translateY(0) scale(1);opacity:.6}50%{transform:translateY(-30px) scale(1.5);opacity:1}}
+    .register-container{position:relative;z-index:10;width:100%;max-width:420px;padding:20px}
+    .register-card{background:rgba(15,25,45,.25);backdrop-filter:blur(25px);border:2px solid transparent;border-radius:25px;padding:45px 35px;position:relative;overflow:hidden;box-shadow:0 0 60px rgba(0,255,255,.25),inset 0 0 60px rgba(0,255,255,.08)}
+    .register-card::before{content:'';position:absolute;inset:0;border-radius:25px;padding:2px;background:linear-gradient(45deg,#00ffff,#0080ff,#00cccc,#00ffff);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:borderGlow 4s ease-in-out infinite alternate}
+    @keyframes borderGlow{0%{opacity:.6}100%{opacity:1}}
+    .register-card::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 30%,rgba(0,255,255,.1) 50%,transparent 70%);animation:shine 6s ease-in-out infinite;pointer-events:none}
+    @keyframes shine{0%{transform:rotate(0) translate(-50%,-50%)}100%{transform:rotate(360deg) translate(-50%,-50%)}}
+    .register-title{font-size:2.8rem;font-weight:900;text-align:center;margin-bottom:45px;color:#00ffff;text-shadow:0 0 15px #00ffff,0 0 25px #00ffff,0 0 35px #00ffff;letter-spacing:4px;animation:titlePulse 3s ease-in-out infinite alternate;position:relative;z-index:2}
+    @keyframes titlePulse{0%{text-shadow:0 0 15px #00ffff,0 0 25px #00ffff,0 0 35px #00ffff;transform:scale(1)}100%{text-shadow:0 0 20px #00ffff,0 0 30px #00ffff,0 0 40px #00ffff;transform:scale(1.02)}}
+    .form-group{margin-bottom:28px;position:relative;z-index:2}
+    .form-input{width:100%;padding:18px 22px;background:rgba(0,20,40,.7);border:1px solid rgba(0,255,255,.4);border-radius:12px;color:#fff;font-size:15px;outline:none;transition:.4s;backdrop-filter:blur(15px)}
+    .form-input::placeholder{color:rgba(255,255,255,.6)}
+    .form-input:focus{border-color:#00ffff;box-shadow:0 0 25px rgba(0,255,255,.4),inset 0 0 25px rgba(0,255,255,.15);transform:translateY(-3px);background:rgba(0,30,60,.8)}
+    .register-button{width:100%;padding:18px;background:linear-gradient(45deg,#00ffff,#0080ff,#00cccc);border:none;border-radius:12px;color:#000;font-size:17px;font-weight:700;cursor:pointer;transition:.4s;text-transform:uppercase;letter-spacing:2px;position:relative;overflow:hidden;margin-bottom:10px;z-index:2;box-shadow:0 0 20px rgba(0,255,255,.3)}
+    .register-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transition:left .6s}
+    .register-button:hover{transform:translateY(-4px);box-shadow:0 15px 40px rgba(0,255,255,.5),0 0 40px rgba(0,255,255,.7);background:linear-gradient(45deg,#00cccc,#00ffff,#0080ff)}
+    .register-button:hover::before{left:100%}
+    .login-link{text-align:center;margin-top:16px;position:relative;z-index:2}
+    .login-link a{color:rgba(0,255,255,.8);text-decoration:none;font-size:13px;transition:.4s;position:relative;padding:5px 10px;border-radius:8px}
+    .login-link a:hover{color:#00ffff;text-shadow:0 0 15px #00ffff;background:rgba(0,255,255,.1);backdrop-filter:blur(10px)}
+    .login-link a::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:2px;background:linear-gradient(90deg,#00ffff,#0080ff);transition:.4s;transform:translateX(-50%)}
+    .login-link a:hover::after{width:80%}
+    @media (max-width:480px){.register-container{padding:15px}.register-card{padding:35px 25px}.register-title{font-size:2.2rem;letter-spacing:2px}.form-input{padding:15px 18px}.register-button{padding:15px;font-size:15px}}
+  </style>
+</head>
+<body>
+  <!-- particles -->
+  <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+  <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+
+  <div class="register-container">
+    <div class="register-card">
+      <h1 class="register-title">REGISTER</h1>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <input id="full_name" type="text" class="form-input" placeholder="Full Name" required>
+        </div>
+        <div class="form-group">
+          <input id="email" type="email" class="form-input" placeholder="Email Address" required>
+        </div>
+        <div class="form-group">
+          <input id="password" type="password" class="form-input" placeholder="Password" required>
+        </div>
+        <button type="submit" class="register-button">Create Account</button>
+        <div id="msg" style="text-align:center;color:#9efeff;font-size:12px;margin-top:8px;"></div>
+      </form>
+
+      <div class="login-link">
+        <a href="./login.html">Already have an account? Login</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase lib + config -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+
+  <script>
+    // efek partikel (biar tetap hidup)
+    document.addEventListener('mousemove', (e) => {
+      document.querySelectorAll('.particle').forEach((p, i) => {
+        const s = (i + 1) * 0.015;
+        const x = (e.clientX - innerWidth/2) * s;
+        const y = (e.clientY - innerHeight/2) * s;
+        p.style.transform = `translate(${x}px, ${y}px) scale(${1+s})`;
+      });
+    });
+
+    const form = document.getElementById('registerForm');
+    const msg  = document.getElementById('msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.querySelector('.register-button');
+      const full_name = document.getElementById('full_name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      btn.textContent = 'INITIALIZING...';
+      btn.style.background = 'linear-gradient(45deg,#ff6b00,#ff8c00,#ffaa00)';
+
+      // 1) daftar user
+      const { data, error } = await sb.auth.signUp({ email, password });
+
+      if (error) {
+        msg.textContent = error.message;
+        btn.textContent = 'Create Account';
+        btn.style.background = 'linear-gradient(45deg,#00ffff,#0080ff,#00cccc)';
+        return;
+      }
+
+      // 2) buat row profile (opsional tapi bagus)
+      if (data?.user?.id) {
+        await sb.from('profiles').insert({ user_id: data.user.id, full_name }).catch(()=>{});
+      }
+
+      // 3) sukses → info + redirect ke login
+      btn.textContent = 'ACCOUNT CREATED';
+      btn.style.background = 'linear-gradient(45deg,#00ff00,#32cd32,#00ff7f)';
+      msg.textContent = 'Account created. Please login.';
+
+      setTimeout(() => { window.location.href = './login.html'; }, 1200);
+    });
+  </script>
+</body>
+</html>
